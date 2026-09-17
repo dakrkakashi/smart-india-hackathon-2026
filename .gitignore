@@ -8,6 +8,9 @@ dist/
 build/
 **/build/
 
+# Ensure frontend src files are never ignored
+!**/frontend/src/**
+
 # Environment files
 .env
 .env.local
@@ -25,7 +28,6 @@ venv/
 env/
 ENV/
 .pytest_cache/
-**/ .pytest_cache/
 htmlcov/
 *.egg-info/
 .coverage
