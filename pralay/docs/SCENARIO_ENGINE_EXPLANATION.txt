@@ -1,0 +1,170 @@
+PRALAYADARSHI - 12-Step Scenario Simulation Engine
+Explanation & Technical Walkthrough
+============================================================
+
+What it is
+----------
+pralay/iot/simulator/flood_scenario.py - a deterministic replay of
+PRD S 23's 12-step demo scenario, driving the full chain:
+
+  SENSE -> FUSE -> ASSESS -> PREDICT -> LEAD TIME -> DECIDE -> ALERT -> EVACUATE
+
+It is the "evidence generator" for the demo: every step emits a
+verifiable state log.
+
+------------------------------------------------------------
+Anatomy of a run
+------------------------------------------------------------
+
+1. SETUP (__init__, line 22)
+   - Picks a pilot village (default: Raini, Chamoli) from
+     data/scripts/seed_regions.py, its shelters, and the AlertService.
+   - Raini carries the PRD story signatures:
+       * Chamoli-2021 disaster epicenter
+       * slope 38.5 degrees
+       * vulnerability 0.88
+       * Rishi Ganga / Dhauli Ganga Basin
+
+2. SCENARIO MATRIX (lines 44-81)
+   A hand-authored 12-row state table of escalating environmental
+   telemetry (rain mm/hr, 24h accumulation, soil %, river level m,
+   rate of rise m/hr) over a 110-minute compressed timeline that
+   starts at 14:00.
+
+   Step  Trigger                        Key signature
+   ----  ------------------------------ ---------------------------------
+   1     Heavy rain starts              22 mm/hr
+   2     Intensity surges               55 mm/hr (torrential downpour)
+   3     Soil saturation climbs         64%
+   4     River rapid rise               5.4 m @ 1.10 m/hr
+   5     Compound risk detected         81% soil, both hazards live
+   6     G->Y->O->RED                   Compound score >= 80
+   7     CRITICAL + lead time           35 minutes
+   8     Affected zone                  Zone A (riverbank / valley floor)
+   9     Shelter selected               Outside flood plain
+   10    Evacuation route               Ridge bypass, avoids culverts
+   11    Authority dispatch             DM + NDRF control room
+   12    Citizen card                    Bilingual, jargon-free
+
+3. PER-STEP COMPUTATION (loop, lines 91-196)
+   Each row runs through the real application services:
+
+   FLOOD RISK  RiskEngine.calculate_flood_risk (risk_engine.py:18)
+     - 30%  river level relative to 7 m danger mark
+     - 25%  rate of rise (normalized by 1.5 m/hr)
+     - 20%  rainfall intensity (normalized by 60 mm/hr)
+     - 10%  rainfall 24h accumulation (normalized by 150 mm)
+     - 10%  drainage factor
+     -  5%  historical flood frequency
+
+   LANDSLIDE RISK  RiskEngine.calculate_landslide_risk (risk_engine.py:73)
+     - 30%  soil saturation level
+     - 25%  slope angle (25-45 degrees is high landslide frequency;
+            Raini's 38.5 deg scores high)
+     - 25%  rainfall trigger (intensity + duration mix)
+     - 15%  saturation trend rate (pore-water pressure buildup)
+     -  5%  historical landslide recurrence
+
+   COMPOUND RISK  RiskEngine.calculate_compound_risk (risk_engine.py:128)
+     Formula:
+       Compound = max(Flood, Landslide) * 0.65
+                  + min(Flood, Landslide) * 0.20
+                  + local_vulnerability * 15
+                  + real_time_escalation_boost
+     Then banded via RISK_THRESHOLDS into:
+       GREEN (0-30) / YELLOW (30-60) / ORANGE (60-80) / RED (80-100)
+
+   LEAD TIME  LeadTimeEngine.estimate_lead_time
+     - Computes minutes-to-breach from river level margin + rate of rise
+     - Computes minutes-to-liquefaction from soil saturation gap + trend
+     - Takes the min of active threats, subtracts a cloudburst penalty
+     - Step 7 then forcibly pins lead time to 35 minutes
+       (lines 135-137) to match the PRD S 23 benchmark.
+
+   ACTION DIRECTIVE  LeadTimeEngine.generate_recommended_action
+     - Maps risk level to evacuation / watch directives
+     - Emits hazard-specific warnings per level
+
+   SHELTER + ROUTE  EvacuationService
+     - find_nearest_available_shelter: nearest safe shelter with
+       capacity and NOT inside an active flood plain
+     - compute_safe_evacuation_route: 3-waypoint ridge bypass that
+       avoids "Valley Floor Path", "River Culvert C-12", and steep
+       debris sectors
+
+   NOTIFICATIONS (steps 11-12)  NotificationService
+     - build_citizen_alert_card: plain-language CitizenAlertCard
+       (PRD S 18) for the affected village
+     - Structured authority dispatch payload for DM / NDRF control room
+
+4. OUTPUT
+   A list of 12 step_record dicts, each with:
+     - environmental_inputs (telemetry snapshot)
+     - assessment (flood / landslide / compound scores, risk level,
+       primary hazard, estimated lead time)
+     - decisions (affected zone, recommended shelter, evacuation
+       route id, action)
+     - authority_dispatch (steps 11+)
+     - citizen_card (step 12)
+
+   __main__ prints the score -> level -> lead-time progression.
+
+------------------------------------------------------------
+How it connects to the rest of the system
+------------------------------------------------------------
+
+iot/simulator/sensor_simulator.py  - the TELEMETRY counterpart
+  - Generates live reading batches
+  - storm_mode / surge_station_id flags drive cloudburst spikes,
+    saturation creep, and river surges
+  - Scenario engine uses hard-coded state; simulator produces
+    streaming values - two complementary demo paths
+
+frontend/src/components/dashboard/ScenarioPlayer.tsx - the VISUALIZER
+  - Auto-play every 3.5 s per step
+  - Progress bar (12 steps)
+  - Live environmental telemetry cards (rainfall rate, soil
+    saturation, river level, compound score, estimated lead time,
+    assigned shelter)
+  - Risk badge (pulsing RED in critical states)
+  - "Jump to Step 7 (Lead Time 35m)" demo shortcut
+  - "View Citizen Warning Card" button opens CitizenAlertModal when
+    step 12's citizen card is available
+
+------------------------------------------------------------
+Verified scoring (step 7, Raini)
+------------------------------------------------------------
+At step 7, Raini yields approximately:
+  Flood risk        ~ 92.5 / 100
+  Landslide risk    ~ 86.0 / 100
+  Compound risk     ~ 90.5 / 100  -> RED (>= 80)
+The 35-minute lead-time override at step 7 is a cosmetic alignment
+with the PRD benchmark, not a score correction - the demo is already
+RED before the override is applied.
+
+------------------------------------------------------------
+Worth noting (hard-codes / gaps)
+------------------------------------------------------------
+  - drainage_efficiency_score = 0.45 is hard-coded at line 101;
+    would come from the terrain service in production.
+  - Vulnerability is static per village (seed_regions).
+  - Lead-time reliability uses a default sensor factor of 0.90.
+  - Saturation trend is derived from the scenario matrix, not a live
+    IoT stream.
+
+------------------------------------------------------------
+Key file references
+------------------------------------------------------------
+  pralay/iot/simulator/flood_scenario.py
+  pralay/iot/simulator/sensor_simulator.py
+  pralay/backend/app/services/risk_engine.py
+  pralay/backend/app/services/lead_time_engine.py
+  pralay/backend/app/services/evacuation_service.py
+  pralay/backend/app/services/notification_service.py
+  pralay/backend/app/services/alert_service.py
+  pralay/backend/app/utils/constants.py
+  pralay/data/scripts/seed_regions.py
+  pralay/frontend/src/components/dashboard/ScenarioPlayer.tsx
+  pralay/frontend/src/components/citizen/CitizenAlertModal.tsx
+
+(Documentation generated 2026-09-16)

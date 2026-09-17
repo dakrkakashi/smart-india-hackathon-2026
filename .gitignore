@@ -1,0 +1,64 @@
+# Dependencies
+node_modules/
+**/node_modules/
+
+# Production builds
+dist/
+**/dist/
+build/
+**/build/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# Python
+__pycache__/
+**/__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+.pytest_cache/
+**/ .pytest_cache/
+htmlcov/
+*.egg-info/
+.coverage
+
+# ML trained large weights / checkpoints
+ml/models/trained/*.pth
+ml/models/trained/*.pkl
+ml/models/trained/*.h5
+**/ml/models/trained/*.pth
+**/ml/models/trained/*.pkl
+**/ml/models/trained/*.h5
+
+# Raw & Processed heavy data
+data/raw/*
+!data/raw/.gitkeep
+data/processed/*
+!data/processed/.gitkeep
+**/data/raw/*
+!**/data/raw/.gitkeep
+**/data/processed/*
+!**/data/processed/.gitkeep
+
+# IDE and OS
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Logs & Databases
+*.log
+logs/
+*.db
+*.sqlite

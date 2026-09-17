@@ -1,0 +1,1133 @@
+PRALAYADARSHI
+PRODUCT REQUIREMENTS DOCUMENT (PRD)
+SIH Problem Statement 26192
+Flash Flood Prediction System for Hilly Regions using Multi-Source Data
+
+============================================================
+1. PRODUCT OVERVIEW
+============================================================
+
+Product Name:
+PRALAYADARSHI
+
+Product Type:
+Software-based Hyperlocal Disaster Prediction and Decision
+Support System
+
+Target Problem:
+Flash floods and landslides in hilly regions often have very
+short warning times. Existing warning mechanisms may provide
+broad-area information but do not sufficiently translate
+multiple local risk signals into village/ward-level actionable
+decisions.
+
+Core Product Goal:
+Integrate rainfall, soil moisture, slope/terrain, historical
+disaster information and real-time IoT inputs to generate
+hyperlocal risk assessments and support timely evacuation.
+
+CORE USP:
+COMPOUND RISK -> LEAD TIME -> ACTION
+
+PRALAYADARSHI should not be positioned simply as an
+"AI flood prediction dashboard."
+
+It should be positioned as:
+
+"A hyperlocal compound-risk and evacuation intelligence system
+that converts multiple environmental signals into village-level
+risk, estimated lead time and actionable evacuation decisions."
+
+
+============================================================
+2. DIRECT ALIGNMENT WITH PS 26192
+============================================================
+
+Problem Statement Requirement:
+Rainfall Data
+Implementation:
+Rainfall ingestion and processing layer
+
+Problem Statement Requirement:
+Soil Moisture Sensors
+Implementation:
+Real-time soil moisture sensor integration
+
+Problem Statement Requirement:
+Slope Stability Models
+Implementation:
+Terrain, slope and susceptibility analysis
+
+Problem Statement Requirement:
+Historical Landslide Inventories
+Implementation:
+Historical disaster/landslide database
+
+Problem Statement Requirement:
+Real-Time IoT Inputs
+Implementation:
+IoT gateway and sensor data ingestion
+
+Problem Statement Requirement:
+Hyperlocal Village/Ward Forecast
+Implementation:
+Village/ward-level risk calculation
+
+Problem Statement Requirement:
+Lead Time for Evacuation
+Implementation:
+Estimated lead-time engine
+
+Problem Statement Requirement:
+Actionable Warning
+Implementation:
+Alert + affected zone + shelter + evacuation action
+
+Primary alignment:
+MULTI-SOURCE DATA
+        ->
+DATA FUSION
+        ->
+COMPOUND RISK
+        ->
+VILLAGE-LEVEL FORECAST
+        ->
+ESTIMATED LEAD TIME
+        ->
+ACTIONABLE WARNING
+
+
+============================================================
+3. TARGET USERS
+============================================================
+
+Primary Users:
+
+1. District Disaster Management Authorities
+2. Local Administration
+3. Emergency Response Teams
+4. Village/Ward-Level Officials
+5. Field Responders
+
+Secondary Users:
+
+1. Citizens in vulnerable villages
+2. Community volunteers
+3. Shelter/relief coordinators
+
+
+============================================================
+4. CORE USER PROBLEM
+============================================================
+
+Current operational challenge:
+
+Multiple signals exist independently:
+
+Rainfall
+Soil moisture
+River/stream level
+Terrain
+Slope
+Historical events
+IoT sensor readings
+
+But the decision maker needs one simple answer:
+
+"Which village is at risk?"
+
+Then:
+
+"How severe is the risk?"
+
+Then:
+
+"How much estimated lead time is available?"
+
+Then:
+
+"What action should be taken?"
+
+
+============================================================
+5. PRODUCT PROMISE
+============================================================
+
+PRALAYADARSHI converts fragmented environmental data into a
+simple operational workflow:
+
+SENSE
+  ->
+FUSE
+  ->
+ASSESS
+  ->
+PREDICT
+  ->
+ESTIMATE LEAD TIME
+  ->
+DECIDE
+  ->
+ALERT
+  ->
+EVACUATE
+  ->
+LEARN
+
+
+============================================================
+6. SYSTEM INPUTS
+============================================================
+
+A. Rainfall
+
+Data:
+- Rainfall intensity
+- Rainfall accumulation
+- Rainfall duration
+- Short-term rainfall trend
+
+Purpose:
+Identify rainfall-driven hazard escalation.
+
+
+B. Soil Moisture
+
+Data:
+- Soil moisture percentage
+- Soil saturation trend
+
+Purpose:
+Identify increasing soil saturation and landslide
+susceptibility.
+
+
+C. River / Stream
+
+Data:
+- Water level
+- Rate of rise
+- Threshold status
+
+Purpose:
+Identify flash-flood escalation.
+
+
+D. Terrain
+
+Data:
+- Elevation
+- Slope
+- Aspect
+- Drainage characteristics
+
+Purpose:
+Identify geographically vulnerable locations.
+
+
+E. Historical Disaster Data
+
+Data:
+- Historical landslide locations
+- Historical flood locations
+- Event severity
+- Rainfall/event relationships
+
+Purpose:
+Identify locations with recurring susceptibility.
+
+
+F. IoT
+
+Data:
+- Soil sensors
+- Water-level sensors
+- Rain gauges
+- Other field sensors
+
+Purpose:
+Provide real-time local observations.
+
+
+G. GIS / Satellite
+
+Data:
+- Land characteristics
+- Terrain
+- Spatial layers
+- Vulnerability information
+
+Purpose:
+Improve spatial analysis.
+
+
+============================================================
+7. DATA PIPELINE
+============================================================
+
+DATA SOURCES
+      |
+      v
+DATA INGESTION
+      |
+      +---- Weather/Rainfall
+      +---- IoT
+      +---- GIS
+      +---- Historical Data
+      |
+      v
+DATA VALIDATION
+      |
+      v
+DATA NORMALIZATION
+      |
+      v
+TIME-SERIES + SPATIAL STORAGE
+      |
+      v
+FEATURE GENERATION
+      |
+      v
+RISK ENGINE
+
+
+============================================================
+8. DATA VALIDATION REQUIREMENTS
+============================================================
+
+The system should check:
+
+- Missing sensor values
+- Invalid readings
+- Sensor communication failure
+- Duplicate readings
+- Abnormal spikes
+- Timestamp consistency
+- Location consistency
+
+If a sensor fails:
+
+System should mark the source as unavailable instead of
+silently treating missing data as normal data.
+
+
+============================================================
+9. COMPOUND RISK ENGINE
+============================================================
+
+The system should calculate two primary hazard risks:
+
+1. Flash Flood Risk
+2. Landslide Risk
+
+These can then contribute to:
+
+3. Compound Risk
+
+
+FLASH FLOOD RISK INPUTS:
+
+- Rainfall intensity
+- Rainfall accumulation
+- Rainfall duration
+- River/stream level
+- Rate of water-level rise
+- Elevation
+- Drainage characteristics
+- Historical flood susceptibility
+
+
+LANDSLIDE RISK INPUTS:
+
+- Rainfall intensity
+- Rainfall duration
+- Soil moisture
+- Soil saturation trend
+- Slope
+- Terrain
+- Historical landslide susceptibility
+
+
+COMPOUND RISK:
+
+Flood Risk
++
+Landslide Risk
++
+Local Vulnerability
++
+Real-Time Conditions
+
+        =
+COMPOUND VILLAGE RISK
+
+
+============================================================
+10. MVP RISK MODEL
+============================================================
+
+For the first implementation, use a transparent weighted risk
+model rather than claiming a fully trained AI model.
+
+Example conceptual model:
+
+Flood Risk =
+weighted combination of:
+- rainfall
+- river level
+- rate of rise
+- terrain
+- historical susceptibility
+
+Landslide Risk =
+weighted combination of:
+- rainfall
+- soil moisture
+- slope
+- rainfall duration
+- historical susceptibility
+
+Compound Risk =
+combination of:
+- flood risk
+- landslide risk
+- local vulnerability
+
+
+Possible risk levels:
+
+GREEN
+LOW
+
+YELLOW
+MODERATE
+
+ORANGE
+HIGH
+
+RED
+CRITICAL
+
+The exact thresholds should be calibrated using historical
+data and validation experiments.
+
+
+============================================================
+11. MACHINE LEARNING PHASE
+============================================================
+
+After sufficient historical data is collected:
+
+1. Prepare historical events
+2. Create training features
+3. Label flood/landslide events
+4. Train candidate models
+5. Validate on unseen events
+6. Measure false alarms
+7. Measure missed events
+8. Measure warning lead time
+9. Compare model performance
+10. Deploy validated model
+
+Possible model approaches can be evaluated during development.
+
+The PPT should NOT claim a specific prediction accuracy until
+the model has actually been trained and validated.
+
+
+============================================================
+12. LEAD-TIME ENGINE
+============================================================
+
+This is one of the main product differentiators.
+
+The system should attempt to answer:
+
+"How much estimated time is available before the hazard
+requires action?"
+
+Inputs may include:
+
+- Current rainfall
+- Rate of rainfall change
+- River/stream rate of rise
+- Soil saturation
+- Terrain
+- Historical event behaviour
+- Current risk trend
+
+Output:
+
+ESTIMATED LEAD TIME
+
+Example:
+
+Village:
+XYZ
+
+Risk:
+CRITICAL
+
+Estimated Lead Time:
+35 minutes
+
+Primary Hazard:
+Flash Flood
+
+Recommended Action:
+Evacuate Zone A
+
+
+IMPORTANT:
+
+The system should describe this as "estimated lead time."
+
+It should not claim guaranteed warning time without validation.
+
+
+============================================================
+13. VILLAGE-LEVEL RISK
+============================================================
+
+The main prediction unit should be:
+
+VILLAGE / WARD
+
+Example dashboard:
+
+--------------------------------------
+VILLAGE XYZ
+--------------------------------------
+
+Risk:
+CRITICAL
+
+Compound Risk:
+87/100
+
+Primary Threat:
+FLASH FLOOD
+
+Secondary Threat:
+LANDSLIDE
+
+Estimated Lead Time:
+35 MINUTES
+
+Affected Zone:
+ZONE A
+
+Nearest Shelter:
+SHELTER 02
+
+Recommended Action:
+EVACUATE
+--------------------------------------
+
+
+============================================================
+14. ALERT ENGINE
+============================================================
+
+Alert levels:
+
+GREEN:
+Normal monitoring
+
+YELLOW:
+Increased monitoring / preparedness
+
+ORANGE:
+Prepare evacuation
+
+RED:
+Immediate evacuation/action according to authority
+protocol
+
+
+Each alert should contain:
+
+- Location
+- Hazard
+- Risk level
+- Timestamp
+- Estimated lead time
+- Affected area
+- Recommended action
+- Shelter information
+- Route information if available
+
+
+============================================================
+15. EVACUATION ENGINE
+============================================================
+
+The system should identify:
+
+1. Affected zone
+2. Safe zone
+3. Nearest available shelter
+4. Recommended evacuation route
+
+Route calculation should consider:
+
+- Flooded roads
+- Landslide-prone roads
+- Road connectivity
+- Terrain
+- Shelter availability
+
+The route should be treated as a decision-support
+recommendation and should be updated when conditions change.
+
+
+============================================================
+16. DASHBOARD
+============================================================
+
+Main dashboard components:
+
+1. Live GIS map
+2. Village risk markers
+3. Flood risk layer
+4. Landslide risk layer
+5. Compound risk layer
+6. Sensor status
+7. Rainfall information
+8. River level information
+9. Lead-time display
+10. Active alerts
+11. Shelter locations
+12. Evacuation routes
+13. Historical event layer
+
+
+============================================================
+17. MAIN DASHBOARD WORKFLOW
+============================================================
+
+LOGIN
+  ->
+SELECT REGION
+  ->
+VIEW LIVE MAP
+  ->
+SELECT VILLAGE
+  ->
+VIEW RISK
+  ->
+VIEW LEAD TIME
+  ->
+VIEW PRIMARY HAZARD
+  ->
+VIEW RECOMMENDED ACTION
+  ->
+VIEW SHELTER / ROUTE
+
+
+============================================================
+18. CITIZEN ALERT INTERFACE
+============================================================
+
+Citizen-facing warning should be simple.
+
+Example:
+
+RED ALERT
+
+FLASH FLOOD RISK
+
+Your village:
+XYZ
+
+Estimated lead time:
+35 minutes
+
+ACTION:
+Move to the designated safe shelter.
+
+Shelter:
+Government School - Shelter 02
+
+Avoid:
+River-side road / Zone A
+
+
+The citizen interface should avoid technical ML terminology.
+
+
+============================================================
+19. AUTHORITY INTERFACE
+============================================================
+
+Authority dashboard should provide more detailed information:
+
+- Risk score
+- Risk trend
+- Sensor status
+- Affected villages
+- Estimated lead time
+- Historical incidents
+- Evacuation status
+- Shelter capacity
+- Active alerts
+- Recommended actions
+
+
+============================================================
+20. DATABASE REQUIREMENTS
+============================================================
+
+Core entities:
+
+VILLAGE
+- village_id
+- name
+- district
+- state
+- latitude
+- longitude
+- population
+
+SENSOR
+- sensor_id
+- type
+- location
+- status
+
+SENSOR_READING
+- sensor_id
+- timestamp
+- value
+
+RAINFALL
+- location
+- timestamp
+- intensity
+- accumulation
+- duration
+
+RIVER_LEVEL
+- station_id
+- timestamp
+- water_level
+- rate_of_rise
+
+HISTORICAL_EVENT
+- event_id
+- type
+- location
+- date
+- severity
+
+RISK_RECORD
+- location
+- timestamp
+- flood_risk
+- landslide_risk
+- compound_risk
+
+ALERT
+- alert_id
+- location
+- severity
+- timestamp
+- lead_time
+- recommended_action
+
+SHELTER
+- shelter_id
+- location
+- capacity
+- availability
+
+
+============================================================
+21. RECOMMENDED SOFTWARE ARCHITECTURE
+============================================================
+
+FRONTEND:
+
+Web dashboard
+GIS map
+Charts
+Alert interface
+
+
+BACKEND:
+
+API server
+Authentication
+Risk engine
+Alert engine
+Evacuation engine
+
+
+DATA LAYER:
+
+Time-series data
+Spatial/GIS data
+Historical disaster database
+
+
+AI/ML LAYER:
+
+Feature generation
+Risk prediction
+Model inference
+Model evaluation
+
+
+IOT LAYER:
+
+Sensor gateway
+Data ingestion
+Sensor health monitoring
+
+
+NOTIFICATION LAYER:
+
+Dashboard alerts
+SMS
+Mobile notifications
+Other approved alert channels
+
+
+============================================================
+22. SUGGESTED MVP
+============================================================
+
+Do NOT attempt to build everything initially.
+
+MVP should contain:
+
+1. Village-level GIS map
+2. Rainfall input
+3. Terrain/slope data
+4. Historical incident layer
+5. Initial risk engine
+6. Village risk score
+7. Risk color classification
+8. Estimated lead-time prototype
+9. Alert generation
+10. Shelter mapping
+11. Basic evacuation route
+12. Authority dashboard
+
+
+============================================================
+23. DEMO SCENARIO
+============================================================
+
+Use one realistic simulated scenario.
+
+STEP 1
+
+Heavy rainfall begins.
+
+STEP 2
+
+Rainfall intensity increases.
+
+STEP 3
+
+Soil moisture begins increasing.
+
+STEP 4
+
+River/stream level starts rising.
+
+STEP 5
+
+System detects increasing compound risk.
+
+STEP 6
+
+Village XYZ changes from:
+
+GREEN -> YELLOW -> ORANGE -> RED
+
+STEP 7
+
+System displays:
+
+CRITICAL RISK
+
+Estimated Lead Time:
+35 minutes
+
+STEP 8
+
+System identifies affected zone.
+
+STEP 9
+
+System recommends shelter.
+
+STEP 10
+
+System generates evacuation route.
+
+STEP 11
+
+Authority receives alert.
+
+STEP 12
+
+Citizen receives simplified warning.
+
+
+============================================================
+24. SUCCESS METRICS
+============================================================
+
+Technical:
+
+- Prediction performance
+- False alarm rate
+- Missed-event rate
+- Sensor data availability
+- System response time
+- API latency
+- Data freshness
+
+Operational:
+
+- Warning lead time
+- Number of villages covered
+- Alert delivery time
+- Shelter identification time
+- Route generation time
+
+User:
+
+- Alert readability
+- Authority response workflow
+- Ease of dashboard use
+- Action completion
+
+
+============================================================
+25. VALIDATION PLAN
+============================================================
+
+Use historical events to test:
+
+"What would PRALAYADARSHI have predicted if this system had
+been running during the event?"
+
+Measure:
+
+1. Correctly identified high-risk locations
+2. False alarms
+3. Missed events
+4. Estimated lead time
+5. Risk escalation timing
+6. Sensor contribution
+7. Model robustness
+
+This creates evidence for the system instead of relying only
+on claims.
+
+
+============================================================
+26. IMPLEMENTATION ROADMAP
+============================================================
+
+PHASE 1 — PROTOTYPE
+
+- UI/UX
+- GIS map
+- Village database
+- Rainfall data
+- Terrain data
+- Basic risk engine
+- Dashboard
+
+OUTPUT:
+Working demonstrable prototype
+
+
+PHASE 2 — MULTI-SOURCE FUSION
+
+- Soil moisture
+- River level
+- Historical disaster data
+- IoT integration
+- Compound risk engine
+
+OUTPUT:
+Multi-source operational prototype
+
+
+PHASE 3 — PREDICTION + VALIDATION
+
+- Historical dataset preparation
+- Feature engineering
+- ML experiments
+- Backtesting
+- False-alarm analysis
+- Lead-time evaluation
+
+OUTPUT:
+Validated predictive model
+
+
+PHASE 4 — FIELD PILOT
+
+- Sensor deployment
+- Authority testing
+- Alert integration
+- Evacuation workflow
+- User feedback
+
+OUTPUT:
+Pilot-ready system
+
+
+PHASE 5 — SCALE
+
+- More villages
+- More sensor stations
+- Model improvement
+- State-level integration
+- Continuous monitoring
+
+
+============================================================
+27. PPT SLIDE STRUCTURE
+============================================================
+
+SLIDE 1:
+PRALAYADARSHI
+From Hazard Detection to Village-Safe Evacuation
+
+SLIDE 2:
+THE PROBLEM
+The critical gap between detection and evacuation
+
+SLIDE 3:
+OUR SOLUTION
+Four questions:
+WHERE?
+HOW SEVERE?
+HOW SOON?
+WHAT NOW?
+
+SLIDE 4:
+MULTI-SOURCE INTELLIGENCE
+Rain + Soil + River + Terrain + History + IoT
+
+SLIDE 5:
+USP
+COMPOUND RISK -> LEAD TIME -> ACTION
+
+SLIDE 6:
+RISK ENGINE
+Flood + Landslide + Vulnerability -> Compound Risk
+
+SLIDE 7:
+LEAD-TIME ENGINE
+Risk prediction -> Estimated available response time
+
+SLIDE 8:
+ACTION & EVACUATION
+Affected zone -> Shelter -> Route -> Alert
+
+SLIDE 9:
+SYSTEM ARCHITECTURE
+Data -> Fusion -> Risk Engine -> Decision Engine -> Alerts
+
+SLIDE 10:
+IMPLEMENTATION ROADMAP
+Prototype -> Fusion -> Validation -> Field Pilot -> Scale
+
+FINAL MESSAGE:
+
+DETECT EARLIER.
+IDENTIFY LOCALLY.
+ACT IN TIME.
+
+
+============================================================
+28. THE CORE USP FOR THE PPT
+============================================================
+
+Do NOT say:
+
+"AI + IoT + GIS based disaster management platform."
+
+Instead say:
+
+"PRALAYADARSHI converts multiple real-time and historical
+hazard signals into a village-level compound-risk assessment,
+estimates the available lead time, and translates the prediction
+into an actionable evacuation decision."
+
+SHORT VERSION:
+
+"Compound Risk -> Lead Time -> Action."
+
+
+============================================================
+29. PRODUCT NORTH STAR
+============================================================
+
+The system should ultimately answer these four questions:
+
+1. WHERE IS THE RISK?
+2. HOW SEVERE IS IT?
+3. HOW MUCH ESTIMATED TIME REMAINS?
+4. WHAT ACTION SHOULD BE TAKEN?
+
+If a feature does not help answer one of these questions,
+it should not be a priority for the MVP.
+
+
+============================================================
+30. FINAL PRODUCT FLOW
+============================================================
+
+                    MULTI-SOURCE DATA
+                           |
+       -------------------------------------------
+       |          |          |        |          |
+    Rainfall     Soil      River    Terrain   History/IoT
+       |          |          |        |          |
+       -------------------------------------------
+                           |
+                    DATA FUSION
+                           |
+                  COMPOUND RISK ENGINE
+                           |
+             ----------------------------
+             |                          |
+        FLASH FLOOD                LANDSLIDE
+           RISK                       RISK
+             |                          |
+             -----------+---------------
+                        |
+                 VILLAGE RISK
+                        |
+                 LEAD-TIME ENGINE
+                        |
+              DECISION ENGINE
+                        |
+          -------------------------
+          |           |           |
+        ALERT       SHELTER      ROUTE
+          |           |           |
+          -------------------------
+                        |
+                 EVACUATION ACTION
+                        |
+                  FIELD RESPONSE
+                        |
+                    FEEDBACK
+                        |
+                  MODEL IMPROVEMENT
+
+
+============================================================
+END OF PRD
+============================================================
