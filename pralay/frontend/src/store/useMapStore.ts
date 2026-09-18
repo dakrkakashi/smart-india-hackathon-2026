@@ -46,13 +46,13 @@ export const useMapStore = create<MapState>((set, get) => ({
       fetchShelters(),
     ]);
 
-    if (assessmentsResult.status === 'fulfilled' && assessmentsResult.value?.length > 0) {
+    if (assessmentsResult.status === 'fulfilled' && Array.isArray(assessmentsResult.value) && assessmentsResult.value.length > 0) {
       assessmentsData = assessmentsResult.value;
     } else {
       usedFallback = true;
     }
 
-    if (sheltersResult.status === 'fulfilled' && sheltersResult.value?.length > 0) {
+    if (sheltersResult.status === 'fulfilled' && Array.isArray(sheltersResult.value) && sheltersResult.value.length > 0) {
       sheltersData = sheltersResult.value;
     } else {
       usedFallback = true;
@@ -73,7 +73,10 @@ export const useMapStore = create<MapState>((set, get) => ({
     set({ selectedVillageId: villageId });
     try {
       const route = await fetchEvacuationRoute(villageId);
-      set({ route });
+      if (route && typeof route === 'object' && 'route_id' in (route as any)) {
+        set({ route });
+        return;
+      }
     } catch {
       // If the selected village is Raini (1), use the realistic mockRoute
       // Otherwise synthesize or fallback to mockRoute with current village coords
@@ -90,6 +93,7 @@ export const useMapStore = create<MapState>((set, get) => ({
           estimated_transit_minutes: estMins,
           status: 'CLEAR_SAFE',
           avoid_sectors: ['Gorge Corridor', 'Lower Terrace'],
+          instructions: `Follow uphill trail from ${village.village_name} to ${shelter.name}. Avoid lower riverbank terrace.`,
           waypoints: [
             {
               name: `${village.village_name} Assembly Point`,
@@ -98,9 +102,9 @@ export const useMapStore = create<MapState>((set, get) => ({
               type: 'START',
             },
             {
-              name: 'Upper Ridge Safe Corridor',
+              name: 'Mid-slope Safe Ridge',
               lat: (village.latitude + shelter.latitude) / 2 + 0.002,
-              lng: (village.longitude + shelter.longitude) / 2 + 0.001,
+              lng: (village.longitude + shelter.longitude) / 2 + 0.002,
               type: 'SAFE_CORRIDOR',
             },
             {
@@ -110,12 +114,11 @@ export const useMapStore = create<MapState>((set, get) => ({
               type: 'DESTINATION',
             },
           ],
-          instructions: `Evacuate along high elevation ridge route to ${shelter.name}. Avoid lower riverbeds.`,
         };
         set({ route: syntheticRoute });
-      } else {
-        set({ route: mockRoute });
+        return;
       }
+      set({ route: mockRoute });
     }
   },
 

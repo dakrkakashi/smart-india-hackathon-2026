@@ -7,7 +7,7 @@ export interface ApiError {
 }
 
 export const apiClient = axios.create({
-  baseURL: '/api/v1',
+  baseURL: import.meta.env.VITE_API_BASE_URL || '/api/v1',
   timeout: 8000,
   headers: {
     'Content-Type': 'application/json',
@@ -15,7 +15,17 @@ export const apiClient = axios.create({
 });
 
 apiClient.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    // If static host rewrote missing API route to index.html, reject cleanly
+    if (typeof response.data === 'string' && response.data.trim().startsWith('<!doctype html>')) {
+      const apiError: ApiError = {
+        message: 'Endpoint returned HTML instead of JSON (API unavailable)',
+        statusCode: 404,
+      };
+      return Promise.reject(apiError);
+    }
+    return response;
+  },
   (error: AxiosError) => {
     const apiError: ApiError = {
       message: error.message || 'Network error occurred',
